@@ -212,3 +212,70 @@ func TestInMemoryDbPairs_FunctionName(t *testing.T) {
 		t.Errorf("InMemoryDbPairs.FunctionName() = %v, want %v", got, want)
 	}
 }
+
+func TestInMemoryDbHas_FunctionName(t *testing.T) {
+	var has insulationmock_function.InMemoryDbHas
+	want := "memory_db_has"
+	if got := has.FunctionName(); got != want {
+		t.Errorf("InMemoryDbHas.FunctionName() = %v, want %v", got, want)
+	}
+}
+
+func TestInMemoryDbHas(t *testing.T) {
+	// Initialize the Lua state
+	L := lua.NewState()
+	defer L.Close()
+
+	// Set up for the test
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest("GET", "/", nil)
+	insulationmock_function.MemoryDb["testKey"] = "testValue"
+
+	// Test InMemoryDbHas
+	has := &insulationmock_function.InMemoryDbHas{}
+	L.Push(lua.LString("testKey"))
+	n := has.Execute(w, r, L)
+
+	// Verify the correct value is pushed onto the Lua stack
+	if n != 1 {
+		t.Errorf("InMemoryDbHas.Execute() should have returned 1, got %d", n)
+	}
+	retVal := L.ToBool(-1)
+	if !retVal {
+		t.Errorf("Expected to get true, got false")
+	}
+}
+
+func TestInMemoryDbSize_FunctionName(t *testing.T) {
+	var size insulationmock_function.InMemoryDbSize
+	want := "memory_db_size"
+	if got := size.FunctionName(); got != want {
+		t.Errorf("InMemoryDbSize.FunctionName() = %v, want %v", got, want)
+	}
+}
+
+func TestInMemoryDbSize(t *testing.T) {
+	// Initialize the Lua state
+	L := lua.NewState()
+	defer L.Close()
+
+	// Set up for the test
+	w := httptest.NewRecorder()
+	r := httptest.NewRequest("GET", "/", nil)
+	insulationmock_function.MemoryDb = make(map[string]string)
+	insulationmock_function.MemoryDb["key1"] = "value1"
+	insulationmock_function.MemoryDb["key2"] = "value2"
+
+	// Test InMemoryDbSize
+	size := &insulationmock_function.InMemoryDbSize{}
+	n := size.Execute(w, r, L)
+
+	// Verify the correct size is pushed onto the Lua stack
+	if n != 1 {
+		t.Fatalf("InMemoryDbSize.Execute() should have returned 1, got %d", n)
+	}
+	retVal := L.ToNumber(-1)
+	if retVal != 2 {
+		t.Errorf("Expected to get 2, got %d", int(retVal))
+	}
+}

@@ -42,8 +42,6 @@ func main() {
 
 	r := mux.NewRouter()
 	mockServer := insulationmock.NewMockServer(config)
-	// r.HandleFunc("/*", mockServer.HandleRequest)
-	// accept any path and method into HandleRequest
 	r.PathPrefix("/").HandlerFunc(mockServer.HandleRequest)
 
 	server := http.Server{

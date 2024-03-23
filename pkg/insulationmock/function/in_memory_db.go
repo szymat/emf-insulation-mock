@@ -110,3 +110,31 @@ func (a *InMemoryDbPairs) Execute(w http.ResponseWriter, r *http.Request, L *lua
 	L.Push(pairs)
 	return 1
 }
+
+// Size
+
+type InMemoryDbSize struct{}
+
+func (a *InMemoryDbSize) FunctionName() string {
+	return "memory_db_size"
+}
+
+func (a *InMemoryDbSize) Execute(w http.ResponseWriter, r *http.Request, L *lua.LState) int {
+	L.Push(lua.LNumber(len(MemoryDb)))
+	return 1
+}
+
+// has
+
+type InMemoryDbHas struct{}
+
+func (a *InMemoryDbHas) FunctionName() string {
+	return "memory_db_has"
+}
+
+func (a *InMemoryDbHas) Execute(w http.ResponseWriter, r *http.Request, L *lua.LState) int {
+	key := L.ToString(1)
+	_, ok := MemoryDb[key]
+	L.Push(lua.LBool(ok))
+	return 1
+}
