@@ -77,7 +77,7 @@ return Routers
 ```
 
 `scripts/oauth.lua`:
-```lue
+```lua
 if body == nil then
   return 403, "no body"
 end
